@@ -1,0 +1,78 @@
+using System;
+using System.Collections.Generic;
+
+namespace SingletonDemo
+{
+   
+    public class Logger
+    {
+        private static Logger instance;
+        private List<string> log = new List<string>();
+
+        
+        private Logger() { }
+
+        
+        public static Logger Instance => instance ??= new Logger();
+
+       
+        public void AddLog(string message)
+        {
+            log.Add($"{DateTime.Now:HH:mm:ss} — {message}");
+        }
+
+        
+        public IEnumerable<string> GetLog() => log;
+    }
+
+    
+    public class Settings
+    {
+        private static Settings instance;
+        private Dictionary<string, string> parameters = new Dictionary<string, string>();
+
+        private Settings() { }
+
+        public static Settings Instance => instance ??= new Settings();
+
+        public void Set(string key, string value)
+        {
+            parameters[key] = value;
+        }
+
+        public string Get(string key)
+        {
+            return parameters.TryGetValue(key, out var value) ? value : "Не встановлено";
+        }
+    }
+
+    
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            
+            Logger.Instance.AddLog("Програма запущена");
+            Logger.Instance.AddLog("Користувач увійшов в систему");
+
+            Console.WriteLine("📝 Журнал подій:");
+            foreach (var entry in Logger.Instance.GetLog())
+            {
+                Console.WriteLine(entry);
+            }
+
+            Console.WriteLine();
+
+            
+            Settings.Instance.Set("Language", "uk-UA");
+            Settings.Instance.Set("Theme", "Dark");
+            Settings.Instance.Set("WindowSize", "1280x720");
+
+            Console.WriteLine("⚙️ Налаштування:");
+            Console.WriteLine("Мова: " + Settings.Instance.Get("Language"));
+            Console.WriteLine("Тема: " + Settings.Instance.Get("Theme"));
+            Console.WriteLine("Розмір вікна: " + Settings.Instance.Get("WindowSize"));
+            Console.WriteLine("Звуки: " + Settings.Instance.Get("Sounds")); // не встановлено
+        }
+    }
+}
