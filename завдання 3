@@ -1,0 +1,103 @@
+using System;
+
+public interface IMessageSender
+{
+    void Send(string message);
+}
+
+public class EmailSender : IMessageSender
+{
+    public void Send(string message) => Console.WriteLine($"Email: {message}");
+}
+
+public class SmsSender : IMessageSender
+{
+    public void Send(string message) => Console.WriteLine($"SMS: {message}");
+}
+
+public abstract class Message
+{
+    protected IMessageSender sender;
+    public Message(IMessageSender sender) { this.sender = sender; }
+    public abstract void Send(string content);
+}
+
+public class TextMessage : Message
+{
+    public TextMessage(IMessageSender sender) : base(sender) { }
+    public override void Send(string content) => sender.Send($"[Text] {content}");
+}
+
+public class HtmlMessage : Message
+{
+    public HtmlMessage(IMessageSender sender) : base(sender) { }
+    public override void Send(string content) => sender.Send($"<html>{content}</html>");
+}
+
+public interface IDevice
+{
+    void On();
+    void Off();
+}
+
+public class TV : IDevice
+{
+    public void On() => Console.WriteLine("Телевізор увімкнено");
+    public void Off() => Console.WriteLine("Телевізор вимкнено");
+}
+
+public class Radio : IDevice
+{
+    public void On() => Console.WriteLine("Радіо увімкнено");
+    public void Off() => Console.WriteLine("Радіо вимкнено");
+}
+
+public abstract class Remote
+{
+    protected IDevice device;
+    public Remote(IDevice device) { this.device = device; }
+
+    public abstract void TogglePower();
+}
+
+public class SimpleRemote : Remote
+{
+    private bool isOn = false;
+
+    public SimpleRemote(IDevice device) : base(device) { }
+
+    public override void TogglePower()
+    {
+        if (isOn) device.Off();
+        else device.On();
+        isOn = !isOn;
+    }
+}
+
+
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        
+        IMessageSender emailSender = new EmailSender();
+        Message textMsg = new TextMessage(emailSender);
+        textMsg.Send("Привіт, це текстове повідомлення!");
+
+       
+        IMessageSender smsSender = new SmsSender();
+        Message htmlMsg = new HtmlMessage(smsSender);
+        htmlMsg.Send("Це HTML-повідомлення");
+
+       
+        IDevice tv = new TV();
+        Remote tvRemote = new SimpleRemote(tv);
+        tvRemote.TogglePower(); 
+        tvRemote.TogglePower(); 
+
+        
+        IDevice radio = new Radio();
+        Remote radioRemote = new SimpleRemote(radio);
+        radioRemote.TogglePower(); 
+    }
+}
