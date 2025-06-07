@@ -1,0 +1,86 @@
+using System;
+
+public class Character
+{
+    public int Strength, Agility, Intelligence;
+
+    public override string ToString() =>
+        $"Сила: {Strength}, Спритність: {Agility}, Інтелект: {Intelligence}";
+}
+
+public interface ICharacterBuilder
+{
+    ICharacterBuilder SetStrength(int strength);
+    ICharacterBuilder SetAgility(int agility);
+    ICharacterBuilder SetIntelligence(int intelligence);
+    Character Build();
+}
+
+public class WarriorBuilder : ICharacterBuilder
+{
+    private Character character = new Character();
+
+    public ICharacterBuilder SetStrength(int strength) { character.Strength = strength; return this; }
+    public ICharacterBuilder SetAgility(int agility) { character.Agility = agility; return this; }
+    public ICharacterBuilder SetIntelligence(int intelligence) { character.Intelligence = intelligence; return this; }
+
+    public Character Build() => character;
+}
+
+public class SqlQuery
+{
+    public string Select, Where, OrderBy;
+
+    public override string ToString() =>
+        $"{Select} {(Where != null ? $"WHERE {Where}" : "")} {(OrderBy != null ? $"ORDER BY {OrderBy}" : "")}";
+}
+
+public class SqlQueryBuilder
+{
+    private SqlQuery query = new SqlQuery();
+
+    public SqlQueryBuilder SelectFrom(string table, string columns)
+    {
+        query.Select = $"SELECT {columns} FROM {table}";
+        return this;
+    }
+
+    public SqlQueryBuilder WhereEquals(string column, string value)
+    {
+        query.Where = $"{column} = '{value}'";
+        return this;
+    }
+
+    public SqlQueryBuilder OrderByField(string field)
+    {
+        query.OrderBy = field;
+        return this;
+    }
+
+    public SqlQuery Build() => query;
+}
+
+// Точка входу програми
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        // Побудова персонажа
+        ICharacterBuilder builder = new WarriorBuilder();
+        Character warrior = builder
+            .SetStrength(10)
+            .SetAgility(7)
+            .SetIntelligence(4)
+            .Build();
+        Console.WriteLine(warrior);
+
+        // Побудова SQL-запиту
+        SqlQueryBuilder sqlBuilder = new SqlQueryBuilder();
+        SqlQuery query = sqlBuilder
+            .SelectFrom("Users", "*")
+            .WhereEquals("Name", "Ivan")
+            .OrderByField("Age")
+            .Build();
+        Console.WriteLine(query);
+    }
+}
