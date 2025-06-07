@@ -60,12 +60,12 @@ public class SqlQueryBuilder
     public SqlQuery Build() => query;
 }
 
-// Точка входу програми
+
 public class Program
 {
     public static void Main(string[] args)
     {
-        // Побудова персонажа
+        
         ICharacterBuilder builder = new WarriorBuilder();
         Character warrior = builder
             .SetStrength(10)
@@ -74,7 +74,7 @@ public class Program
             .Build();
         Console.WriteLine(warrior);
 
-        // Побудова SQL-запиту
+        
         SqlQueryBuilder sqlBuilder = new SqlQueryBuilder();
         SqlQuery query = sqlBuilder
             .SelectFrom("Users", "*")
